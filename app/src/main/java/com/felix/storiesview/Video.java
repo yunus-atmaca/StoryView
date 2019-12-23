@@ -7,10 +7,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import com.felix.storiesview.Adapters.ImageAdapter;
 import com.felix.storiesview.Adapters.VideoAdapter;
 import com.felix.storiesview.ViewPager.NonSwipeableViewPager;
 import com.felix.storyview.StoryView;

@@ -6,5 +6,6 @@
         <attr name="storyFrontColor" format="color|reference"/>
         <attr name="duration" format="integer|reference"/>
         <attr name="storyHeight" format="dimension"/>
+        <attr name="autoNextStory" format="boolean"/>
     </declare-styleable>
 </resources>

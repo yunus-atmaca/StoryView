@@ -1,9 +1,9 @@
 package com.felix.storyview;
 
+import android.animation.TimeAnimator;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ClipDrawable;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
@@ -11,29 +11,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 
-class ProgressView extends AppCompatImageView {
+class ProgressView extends AppCompatImageView implements TimeAnimator.TimeListener {
     private static final String TAG = "ProgressView";
 
     private final static int MAX_LEVEL = 10000;
     private final static int MIN_LEVEL = 0;
-    private final static int POST_DELAY = 50;
 
-    private int mDuration = 3000;
-    private double levelIncrement;
+    private final static int MAX_LEVEL_IN_TERM_OF_TIME = 10; // 10 second
+    private final static int ONE_SECOND_IN_TERM_OF_LEVEL = 1000;
 
     private ClipDrawable mImageDrawable;
-    private Handler mHandler;
 
     private int mCurrentLevel;
+    private double levelIncrement;
 
     private ProgressViewListener mListener;
 
-    private Runnable levelSetter = new Runnable() {
-        @Override
-        public void run() {
-            setLevel();
-        }
-    };
+    private TimeAnimator mAnimator;
 
     public ProgressView(Context context) {
         this(context,null);
@@ -42,7 +36,8 @@ class ProgressView extends AppCompatImageView {
     public ProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mHandler = new Handler();
+        mAnimator = new TimeAnimator();
+        mAnimator.setTimeListener(this);
 
         mCurrentLevel = MIN_LEVEL;
     }
@@ -59,51 +54,26 @@ class ProgressView extends AppCompatImageView {
         mImageDrawable = (ClipDrawable) getDrawable();
         mImageDrawable.setColorFilter(frontColor, PorterDuff.Mode.SRC_ATOP);
 
-        mDuration = duration;
-
-        calculateLevelIncrement(mDuration);
+        calculateLevelIncrement(duration);
     }
 
-    /**
-     * Progress will be complete MAX_LEVEL(10000) with 50 levelIncrement and 50 delay.
-     * This is meaning 10 second. --> MAX_LEVEL  * 50 == duration * x --> it will calculate
-     * levelIncrement for the time duration.
-     *
-     * @param duration time duration
-     */
-    public void calculateLevelIncrement(int duration){
-        //MAX_LEVEL  * 50(levelIncrement for the 10 second) == 500000,
-        levelIncrement = 500000 / duration;
+    public void calculateLevelIncrement(long duration){
+        double durationInSecond = (double)duration/ ONE_SECOND_IN_TERM_OF_LEVEL;
+        levelIncrement = MAX_LEVEL_IN_TERM_OF_TIME / durationInSecond;
     }
 
     public void setProgressViewListener(@NonNull ProgressViewListener listener){
         mListener = listener;
     }
 
-    private void setLevel() {
-        mCurrentLevel += levelIncrement;
-        mImageDrawable.setLevel(mCurrentLevel);
-        if (mCurrentLevel <= MAX_LEVEL) {
-            mHandler.postDelayed(levelSetter, POST_DELAY);
-        } else {
-            mListener.onEnd();
-            mHandler.removeCallbacks(levelSetter);
-        }
-    }
-
     public void start(){
         mListener.onStart();
-        levelSetter.run();
+        mAnimator.start();
     }
 
     public void stop(){
         mListener.onStop();
-        mHandler.removeCallbacks(levelSetter);
-    }
-
-    public void resume(){
-        mListener.onResume();
-        start();
+        mAnimator.cancel();
     }
 
     public void setMaxLevel(){
@@ -112,13 +82,23 @@ class ProgressView extends AppCompatImageView {
 
     public void setMinLevel(){
         mCurrentLevel = MIN_LEVEL;
-        mHandler.removeCallbacks(levelSetter);
+        mAnimator.cancel();
         mImageDrawable.setLevel(MIN_LEVEL);
+    }
+
+    @Override
+    public void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime) {
+        mImageDrawable.setLevel(mCurrentLevel);
+        if (mCurrentLevel >= MAX_LEVEL) {
+            mAnimator.cancel();
+            mListener.onEnd();
+        } else {
+            mCurrentLevel = (int)(totalTime*levelIncrement);
+        }
     }
     public interface ProgressViewListener{
         void onStart();
         void onEnd();
         void onStop();
-        void onResume();
     }
 }

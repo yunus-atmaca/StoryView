@@ -2,7 +2,6 @@ package com.felix.storiesview;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.view.View;
@@ -16,8 +15,6 @@ public class Image extends AppCompatActivity implements
 
     private NonSwipeableViewPager viewPager;
     private ImageAdapter adapter;
-
-    private int currentPage = 0;
 
     private StoryView storyView;
 

@@ -25,6 +25,7 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
     private int mStoryFrontColor;
     private int mDuration;
     private int mStoryHeight;
+    private boolean mAutoNextStory;
 
     private boolean isComplete;
 
@@ -50,6 +51,7 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
                 Color.WHITE);
         mDuration = typedArray.getInt(R.styleable.StoryView_duration, 3000);
         mStoryHeight = typedArray.getDimensionPixelOffset(R.styleable.StoryView_storyHeight, 5);
+        mAutoNextStory = typedArray.getBoolean(R.styleable.StoryView_autoNextStory, true);
         typedArray.recycle();
 
         mProgressViewsRoot = findViewById(R.id.progress_views_root);
@@ -76,9 +78,10 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
      * This will set duration for the currentProgress.
      * @param duration the duration
      */
-    public void setDuration(int duration){
+    public void setDuration(long duration){
         mProgressViews.get(mCurrentProgress).calculateLevelIncrement(duration);
     }
+
     public void addStoryListener(@NonNull StoryViewListener listener){
         mListener = listener;
     }
@@ -110,7 +113,8 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
         } else{
             --mCurrentProgress;
             mProgressViews.get(mCurrentProgress).setMinLevel();
-            start();
+            if (mAutoNextStory)
+                start();
         }
     }
 
@@ -123,7 +127,8 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
     public void onEnd() {
         ++mCurrentProgress;
         if (mCurrentProgress < mStoryCount){
-            start();
+            if (mAutoNextStory)
+                start();
         }else{
             --mCurrentProgress;
             isComplete = true;
@@ -133,11 +138,6 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
 
     @Override
     public void onStop() {
-
-    }
-
-    @Override
-    public void onResume() {
 
     }
 

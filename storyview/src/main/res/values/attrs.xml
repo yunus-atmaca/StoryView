@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StoryView">
+        <attr name="storyCount" format="integer|reference"/>
+        <attr name="storyBackgroundColor" format="color|reference"/>
+        <attr name="storyFrontColor" format="color|reference"/>
+        <attr name="duration" format="integer|reference"/>
+    </declare-styleable>
+</resources>

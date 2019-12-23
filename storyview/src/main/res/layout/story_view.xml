@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/progress_views_root"
         android:orientation="horizontal"
-        android:layout_margin="@dimen/layout_margin"
+        android:layout_marginLeft="@dimen/layout_margin"
+        android:layout_marginRight="@dimen/layout_margin"
         />
 </FrameLayout>

@@ -42,22 +42,26 @@ class ProgressView extends AppCompatImageView {
     public ProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setViewParams(context);
-
-        mImageDrawable = (ClipDrawable) getDrawable();
         mHandler = new Handler();
 
         mCurrentLevel = MIN_LEVEL;
     }
 
-    private void setViewParams(Context context){
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0,4,1);
+    public void setViewParams(Context context, int height, int backgroundColor, int frontColor, int duration){
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0,height,1);
         params.leftMargin = 8;
         params.rightMargin = 8;
         setLayoutParams(params);
 
-        setBackground(ContextCompat.getDrawable(context, R.color.dark_grey));
+        setBackgroundColor(backgroundColor);
         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.clip));
+
+        mImageDrawable = (ClipDrawable) getDrawable();
+        mImageDrawable.setColorFilter(frontColor, PorterDuff.Mode.SRC_ATOP);
+
+        mDuration = duration;
+
+        calculateLevelIncrement(mDuration);
     }
 
     /**
@@ -70,13 +74,6 @@ class ProgressView extends AppCompatImageView {
     public void calculateLevelIncrement(int duration){
         //MAX_LEVEL  * 50(levelIncrement for the 10 second) == 500000,
         levelIncrement = 500000 / duration;
-    }
-    public void setProperties(int backgroundColor, int frontColor, int duration){
-        setBackgroundColor(backgroundColor);
-        mImageDrawable.setColorFilter(frontColor, PorterDuff.Mode.SRC_ATOP);
-        mDuration = duration;
-
-        calculateLevelIncrement(mDuration);
     }
 
     public void setProgressViewListener(@NonNull ProgressViewListener listener){

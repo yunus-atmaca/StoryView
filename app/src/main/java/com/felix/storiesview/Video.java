@@ -7,13 +7,18 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.felix.storiesview.Adapters.VideoAdapter;
 import com.felix.storiesview.ViewPager.NonSwipeableViewPager;
 import com.felix.storyview.StoryView;
 
-public class Video extends AppCompatActivity implements StoryView.StoryViewListener, View.OnClickListener, VideoViews.VideoListener {
+public class Video extends AppCompatActivity implements
+        StoryView.StoryViewListener,
+        View.OnClickListener,
+        VideoViews.VideoListener {
+    private static final String TAG = "Video";
     private NonSwipeableViewPager viewPager;
     private VideoAdapter adapter;
 
@@ -67,18 +72,22 @@ public class Video extends AppCompatActivity implements StoryView.StoryViewListe
 
     @Override
     public void onCurrentStory(int currentStory) {
-
+        //Calls before current progress start
+        Log.d(TAG,"onCurrentStory");
     }
 
     @Override
     public void onCompleteStories() {
-
+        //Calls when all progress has done
+        Log.d(TAG,"onCompleteStories");
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.left_of_screen:
+                if (previous == 0)
+                    return;
                 storyView.previousStory();
                 goPrevious();
                 break;

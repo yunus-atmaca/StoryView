@@ -23,7 +23,7 @@ class ProgressView extends AppCompatImageView implements TimeAnimator.TimeListen
     private ClipDrawable mImageDrawable;
 
     private int mCurrentLevel;
-    private double levelIncrement;
+    private double mLevelIncrement;
 
     private ProgressViewListener mListener;
 
@@ -59,7 +59,7 @@ class ProgressView extends AppCompatImageView implements TimeAnimator.TimeListen
 
     public void calculateLevelIncrement(long duration){
         double durationInSecond = (double)duration/ ONE_SECOND_IN_TERM_OF_LEVEL;
-        levelIncrement = MAX_LEVEL_IN_TERM_OF_TIME / durationInSecond;
+        mLevelIncrement = MAX_LEVEL_IN_TERM_OF_TIME / durationInSecond;
     }
 
     public void setProgressViewListener(@NonNull ProgressViewListener listener){
@@ -82,7 +82,8 @@ class ProgressView extends AppCompatImageView implements TimeAnimator.TimeListen
 
     public void setMinLevel(){
         mCurrentLevel = MIN_LEVEL;
-        mAnimator.cancel();
+        if (mAnimator != null)
+            mAnimator.cancel();
         mImageDrawable.setLevel(MIN_LEVEL);
     }
 
@@ -93,7 +94,7 @@ class ProgressView extends AppCompatImageView implements TimeAnimator.TimeListen
             mAnimator.cancel();
             mListener.onEnd();
         } else {
-            mCurrentLevel = (int)(totalTime*levelIncrement);
+            mCurrentLevel = (int)(totalTime*mLevelIncrement);
         }
     }
     public interface ProgressViewListener{

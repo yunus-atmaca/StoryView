@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -31,6 +32,8 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
 
     private StoryViewListener mListener;
 
+    Context mContext;
+
     public StoryView(@NonNull Context context) {
         this(context,null);
     }
@@ -42,6 +45,8 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
     public StoryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.story_view, this);
+
+        mContext = context;
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.StoryView);
         mStoryCount = typedArray.getInt(R.styleable.StoryView_storyCount, 5);
@@ -59,13 +64,13 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
         mCurrentProgress = 0;
         isComplete = false;
 
-        createProgressViews(context);
+        createProgressViews();
     }
 
-    private void createProgressViews(Context context){
+    private void createProgressViews(){
         for (int i=0;i<mStoryCount;++i){
-            ProgressView progressView = new ProgressView(context);
-            progressView.setViewParams(context, mStoryHeight, mStoryBackgroundColor, mStoryFrontColor, mDuration);
+            ProgressView progressView = new ProgressView(mContext);
+            progressView.setViewParams(mContext, mStoryHeight, mStoryBackgroundColor, mStoryFrontColor, mDuration);
             progressView.setId(i);
             progressView.setProgressViewListener(this);
 
@@ -81,13 +86,26 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
     public void setDuration(long duration){
         mProgressViews.get(mCurrentProgress).calculateLevelIncrement(duration);
     }
+    public void setStoryCount(int storyCount){
+        mStoryCount = storyCount;
+        mProgressViewsRoot.removeAllViews();
+        mProgressViews.clear();
 
+        createProgressViews();
+    }
+    public void setAllStoriesMin(){
+        for (int i=0;i<mStoryCount;++i)
+            mProgressViews.get(i).setMinLevel();
+        mCurrentProgress = 0;
+    }
     public void addStoryListener(@NonNull StoryViewListener listener){
         mListener = listener;
     }
 
     public void start(){
-        mListener.onCurrentStory(mCurrentProgress);
+        if (mListener != null)
+            mListener.onCurrentStory(mCurrentProgress);
+
         mProgressViews.get(mCurrentProgress).start();
     }
 
@@ -120,7 +138,7 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
 
     @Override
     public void onStart() {
-
+        Log.d(TAG, "[onStart]current progress:" +mCurrentProgress);
     }
 
     @Override
@@ -132,13 +150,14 @@ public class StoryView extends FrameLayout implements ProgressView.ProgressViewL
         }else{
             --mCurrentProgress;
             isComplete = true;
-            mListener.onCompleteStories();
+            if (mListener != null)
+                mListener.onCompleteStories();
         }
     }
 
     @Override
     public void onStop() {
-
+        Log.d(TAG, "[onStop]current progress:" +mCurrentProgress);
     }
 
     public interface StoryViewListener{

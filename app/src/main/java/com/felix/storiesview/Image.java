@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.felix.storiesview.Adapters.ImageAdapter;
@@ -12,7 +13,7 @@ import com.felix.storyview.StoryView;
 
 public class Image extends AppCompatActivity implements
         StoryView.StoryViewListener, View.OnClickListener {
-
+    private static final String TAG = "Image";
     private NonSwipeableViewPager viewPager;
     private ImageAdapter adapter;
 
@@ -42,12 +43,15 @@ public class Image extends AppCompatActivity implements
 
     @Override
     public void onCurrentStory(int currentStory) {
+        //Calls before current progress start
         viewPager.setCurrentItem(currentStory);
+        Log.d(TAG,"onCurrentStory");
     }
 
     @Override
     public void onCompleteStories() {
-
+        //Calls when all progress has done
+        Log.d(TAG,"onCompleteStories");
     }
 
     @Override

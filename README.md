@@ -54,7 +54,32 @@ You can also use this library in videos, if the follows these instructions.
 &nbsp;&nbsp; - When the next video ready, VideoPlayer will give you the duration of the video. `storyView.setDuration(7587);` call this function with video's duration then call `storyView.start();` to start next story.    
   
 I made a simple example for image and videos. You should check the repository.  
-  
+
+### Install
+&nbsp;&nbsp;Must be the libs folder in project level, put the storyview.arr file here. then put the `flatDir{dirs 'libs'}` in build.gradle;
+```
+  allprojects {
+   repositories {
+      jcenter()
+      .
+      flatDir {
+        dirs 'libs'
+      }
+      .
+    }
+  }
+```
+And in app level build.gradle file;  
+```
+  dependencies  {
+      .
+      .
+      implementation(name:'storyview', ext:'aar')
+      .
+      .
+  }
+```
+
 ### More
 &nbsp;&nbsp; `storyView.stop();` stop current story view.  
 &nbsp;&nbsp; `storyView.previousStory();` go back to previous story view.  
